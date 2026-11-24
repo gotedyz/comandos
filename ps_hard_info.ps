@@ -1,0 +1,5 @@
+Write-Output "=== CPU ==="; Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors | Format-Table -AutoSize
+Write-Output "=== RAM TOTAL (GB) ==="; [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
+Write-Output "=== GPU ==="; (Get-CimInstance Win32_VideoController).Name; if (Get-Command nvidia-smi -ErrorAction SilentlyContinue) { nvidia-smi --query-gpu=name,memory.total --format=csv,noheader }
+Write-Output "=== DISCOS ==="; Get-PhysicalDisk | Select-Object FriendlyName, MediaType, @{N="Total_GB";E={[math]::Round($_.Size/1GB,0)}} | Format-Table -AutoSize
+Write-Output "=== ESPACIO LIBRE ==="; Get-Volume | Where-Object {$_.DriveLetter} | Select-Object DriveLetter, @{N="Libre_GB";E={[math]::Round($_.SizeRemaining/1GB,0)}} | Format-Table -AutoSize
